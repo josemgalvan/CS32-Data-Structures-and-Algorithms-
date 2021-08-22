@@ -1,1 +1,71 @@
+Since the purpose of this assignment is to give you experience using recursion, you
+may not use any of C++'s iteration constructs (do, while, for, and goto) or any STL
+algorithms (if you have no idea what this means, you're OK). In fact, similar to
+homework #2, you may only use the substr() and size()/length() functions in the string
+class. All repetition must be accomplished using recursion. This applies to every
+operation in the program, even file operations. Obviously, you would never write a
+program like this in industry but as an exercise it should be useful to gain experience
+with recursion.
 
+
+Sample Runs
+Here are two examples of how the program might work:
+Please enter a string for an anagram: rat
+Matching word art
+Matching word rat
+Matching word tar
+Please enter a string for an anagram: regardless
+No matches found
+
+Requirements 
+You must write these three functions with the exact same function signature (include
+case):
+
+int makeDictionary(istream &dictfile, string dict[]);
+Puts each string in dictfile into the array dict. Returns the number of words
+read into dict. This number should not be larger than MAXDICTWORDS since that is
+the size of the array.
+int shuffleChars(string word, const string dict[], int size,
+string results[]);
+Puts all the possibilities of word which are found in dict into results. Returns
+the number of matched words found. This number should not be larger than
+MAXRESULTS since that is the size of the array. The size is the number of words
+inside the dict array.
+void revealOutcomes(const string results[], int size);
+Displays size number of strings from results. The results can be printed in
+any order.
+
+For words with double letters you may find that different permutations match the same
+word in the dictionary. For example, if you find all the permutations of the string kloo
+using the algorithm we've discussed you may find that the word look is found twice. The
+o's in kloo take turns in front. Your program should ensure that matches are unique, in
+other words, the results array returned from the shuffleChars function should have
+no duplicates. A nice way to test this, and your function in general, might be to use the
+assert facility from the standard library. If done properly the following code should run
+without a runtime error being generated.
+ string exampleDict[] = {"kool", "moe", "dee"};
+ int numResults = shuffleChars("kloo", exampleDict, 3,
+results);
+ assert(numResults == 1 && results[0] == "kool");
+Again, your solution must not use the keywords while, for, or goto or any STL
+algorithm functions. You must not use global variables or variables declared with the
+keyword static, and you must not modify the function parameter lists. You must use the
+integer constants MAXRESULTS and MAXDICTWORDS, as the declared sizes of your
+arrays, as in the anagrams.cpp example provided to you.
+Helpful Tips
+In this project you will also have to deal with one of the drawbacks of using recursive
+functions. Repeated recursive calls may exhaust the stack space (we will talk about
+stacks soon) that's been allocated for your program. If you use the sample dictionary file 
+provided, you are almost guaranteed to have a default stack size that is not large
+enough. Here is how to change the stack size on different platforms:
+Visual Studio
+In the Property Pages dialog, in the left panel, select Configuration Properties / Linker /
+System. In the right panel, select Stack Reserve Size, and in the drop-down list to its
+right, type in a new stack size (8000000 is approximately 8MB). Click OK.
+Xcode
+Click on the Project Name, Select Build Settings at the top then scroll below to find the
+Linker subsection. Add -Wl,-stack_size,8000000 to the Other Linker Flags field.
+Linux
+Run the command ulimit -s 8000 before compiling your program.
+While completing this assignment you may find it helpful to review file operations and
+using the substr function.
