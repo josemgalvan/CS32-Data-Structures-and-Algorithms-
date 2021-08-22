@@ -1,0 +1,183 @@
+Consider the following OnlineDating interface:
+
+
+typedef std::string OnlineType;
+class OnlineDating
+{
+ public:
+ OnlineDating(); // Create an empty OnlineDating list
+ bool noMatches() const; // Return true if the OnlineDating list
+ // is empty, otherwise false.
+ int howManyMatches() const; // Return the number of matches
+ // on the OnlineDating list.
+ bool makeMatch(const std::string& firstName, const std::string&
+ lastName, const OnlineType& value);
+ // If the full name (both the first and last name) is not equal
+ // to any full name currently in the list then add it and return
+ // true. Elements should be added according to their last name.
+ // Elements with the same last name should be added according to
+ // their first names. Otherwise, make no change to the list and
+ // return false (indicating that the name is already in the
+ // list).
+ bool transformMatch(const std::string& firstName, const
+std::string& lastName, const OnlineType & value);
+ // If the full name is equal to a full name currently in the
+ // list, then make that full name no longer map to the value it
+ // currently maps to, but instead map to the value of the third 
+ // parameter; return true in this case. Otherwise, make no
+ // change to the list and return false.
+ bool makeOrTransform(const std::string& firstName, const
+std::string& lastName, const OnlineType& value);
+ // If full name is equal to a name currently in the list, then
+ // make that full name no longer map to the value it currently
+ // maps to, but instead map to the value of the third parameter;
+ // return true in this case. If the full name is not equal to
+ // any full name currently in the list then add it and return
+ // true. In fact, this function always returns true.
+ bool blockPreviousMatch(const std::string& firstName, const
+std::string& lastName);
+ // If the full name is equal to a full name currently in the
+ // list, remove the full name and value from the list and return
+ // true. Otherwise, make no change to the list and return
+ // false.
+ bool someoneAmongMatches(const std::string& firstName, const
+std::string& lastName) const;
+ // Return true if the full name is equal to a full name
+ // currently in the list, otherwise false.
+ bool lookAtMatches(const std::string& firstName, const
+std::string& lastName, OnlineType& value) const;
+ // If the full name is equal to a full name currently in the
+ // list, set value to the value in the list that that full name
+ // maps to, and return true. Otherwise, make no change to the
+ // value parameter of this function and return false.
+ bool confirmMatch(int i, std::string& firstName, std::string&
+lastName, OnlineType & value) const;
+ // If 0 <= i < size(), copy into firstName, lastName and value
+ // parameters the corresponding information of the element at
+ // position i in the list and return true. Otherwise, leave the
+ // parameters unchanged and return false. (See below for details
+ // about this function.)
+
+ void tradeMatches(OnlineDating& other);
+ // Exchange the contents of this list with the other one.
+};
+
+
+The makeMatch function primarily places elements so that they are sorted in the list
+based on last name. If there are multiple entries with the same last name then those
+elements, with the same last name, are added so that they are sorted by their first
+name. In other words, this code fragment 
+
+ OnlineDating clippersGonnaClip;
+ clippersGonnaClip.makeMatch ("Kawhi", "Leonard", 2);
+ clippersGonnaClip.makeMatch ("Paul", "George", 13);
+ clippersGonnaClip.makeMatch ("Ivica", "Zubac", 40);
+ clippersGonnaClip.makeMatch ("Reggie", "Jackson", 1);
+ clippersGonnaClip.makeMatch ("Patrick", "Beverley", 21);
+ for (int n = 0; n < clippersGonnaClip.howManyMatches(); n++)
+ {
+ string first;
+ string last;
+ int val;
+ clippersGonnaClip.confirmMatch (n, first, last, val);
+ cout << first << " " << last << " " << val << endl;
+ }
+ 
+ 
+must result in the output:
+ Patrick Beverley 21
+ Paul George 13
+ Reggie Jackson 1
+ Kawhi Leonard 2
+ Ivica Zubac 40
+ 
+Notice that the empty string is just as good a string as any other; you should not treat it
+in any special way:
+ OnlineDating dodgers;
+ dodgers.makeMatch("Clayton", "Kershaw", 31.0);
+ dodgers.makeMatch("Cody", "Bellinger", 11.5);
+ assert(!dodgers.someoneAmongMatches ("",""));
+ dodgers.makeMatch("Mookie", "Betts", 27.0);
+ dodgers.makeMatch("", "", 0.57);
+ dodgers.makeMatch("Justin", "Turner", 20.0);
+ assert(dodgers.someoneAmongMatches ("", ""));
+ dodgers.blockPreviousMatch("Mookie", "Betts");
+ assert(dodgers.howManyMatches() == 4
+ && dodgers.someoneAmongMatches("Clayton", "Kershaw")
+ && dodgers.someoneAmongMatches ("Cody", "Bellinger")
+ && dodgers.someoneAmongMatches ("Justin", "Turner")
+ && dodgers.someoneAmongMatches ("", ""));
+When comparing keys for makeMatch, transformMatch, makeOrTransform,
+blockPreviousMatch, someoneAmongMatches, and lookAtMatches, just use the 
+== or != operators provided for the string type by the library. These do case-sensitive
+comparisons, and that's fine.
+For this project, implement this OnlineDating interface using a doubly-linked list.
+(You must not use any container from the C++ library.)
+For your implementation, if you let the compiler write the destructor, copy constructor,
+and assignment operator, they will do the wrong thing, so you will have to declare and
+implement these public member functions as well:
+
+Implement Some Non-Member Functions
+Using only the public interface of OnlineDating, implement the following two
+functions. (Notice that they are non-member functions; they are not members of
+OnlineDating or any other class.)
+bool mergeMatches(const OnlineDating & odOne,
+ const OnlineDating & odTwo,
+ OnlineDating & odJoined);
+When this function returns, odJoined must consist of pairs determined by these rules:
+If a full name appears in exactly one of odOne and odTwo, then odJoined must
+contain an element consisting of that full name and its corresponding value.
+If a full name appears in both odOne and odTwo, with the same corresponding value in
+both, then odJoined must contain an element with that full name and value. 
+When this function returns, odJoined must contain no elements other than those
+required by these rules. (You must not assume odJoined is empty when it is passed in
+to this function; it might not be.)
+If there exists a full name that appears in both odOne and odTwo, but with different
+corresponding values, then this function returns false; if there is no full name like this,
+the function returns true. Even if the function returns false, result must be constituted as
+defined by the above rules.
+For example, suppose a OnlineDating maps the full name to integers. If odOne
+consists of these three elements
+"Dwight" "Howard" 39 "LeBron" "James" 23 "Javale" "McGee" 7
+and odTwo consists of
+"LeBron" "James" 23 "Dennis" "Schroeder" 17
+then no matter what value it had before, odJoined must end up as a list consisting of
+"Dwight" "Howard" 39 "LeBron" "James" 23 "Javale" "McGee" 7
+"Dennis" "Schroeder" 17
+and mergeMatches must return true.
+If instead, odOne consists of
+"Anthony" "Davis" 3 "LeBron" "James" 23 "Kyle" "Kuzma" 0
+and odTwo consists of
+"LeBron" "James" 6 "Dennis" "Schroeder" 17
+then no matter what value it had before, odJoined must end up as a list consisting of
+"Anthony" "Davis" 3 "Kyle" "Kuzma" 0 "Dennis" "Schroeder" 17
+and mergeMatches must return false.
+void authenticateMatches (const std::string& fsearch,
+ const std::string& lsearch,
+ const OnlineDating& odOne,
+ OnlineDating& odResult);
+When this function returns, odResult must contain a copy of all the elements in odOne
+that match the search terms; it must not contain any other elements. You can wildcard
+the first name, last name or both by supplying "*". (You must not assume result is empty
+when it is passed in to this function; it may not be.) 
+CS 32 – Summer 2021 E. Ambrosio
+For example, if coffeeMeetsBagel consists of the three elements
+"Cobey" "C" 35 "Dan" "H" 38 "Dan" "V" 44 "Dion" "V" 45
+and the following call is made:
+authenticateMatches("Dan", "*", coffeeMeetsBagel, odResult);
+then no matter what value it had before, odResult must end up as a OnlineDating
+consisting of
+"Dan" "H" 38 "Dan" "V" 44
+If instead, tinder were
+"Caitlyn" "J" 71 "Khloe" "K" 37 "Kim" "K" 40 "Kanye" "W"
+44
+and the following call is made:
+authenticateMatches("*", "K", tinder, result);
+then no matter what value it had before, result must end up as a list consisting of
+"Khloe" "K" 37 "Kim" "K" 40
+If the following call is made:
+authenticateMatches("*", "*", tinder, result);
+then no matter what value it had before, result must end up being a copy of tinder.
+Be sure these functions behave correctly in the face of aliasing:
+What if tinder and
+result refer to the same OnlineDating, for example?
