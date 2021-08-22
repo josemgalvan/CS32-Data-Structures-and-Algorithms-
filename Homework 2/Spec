@@ -1,0 +1,156 @@
+1. Here are five functions, with descriptions of what they are supposed to do. They
+are incorrectly implemented. Replace the incorrect implementations of these
+functions with correct ones that use recursion in a useful way; your solution must
+not use the keywords while, for, or goto. You must not use global variables or
+variables declared with the keyword static, and you must not modify the function
+parameter lists. You must not use any references or pointers as parameters
+except for the parameters representing arrays. For the string functions, you may
+only use the substr() and size()/length() functions, as I want you to become
+familiar with utilizing array manipulation. I only strongly discourage you using
+helper functions for this assignment, as it can be solved without it.
+
+
+// Returns the product of two non-negative integers, m and n,
+// using only repeated addition.
+int mTimesN(unsigned int m, unsigned int n)
+{
+ return -1; // This is incorrect.
+}
+// Returns the number of occurrences of digit in the decimal
+// representation of num. digit is an int between 0 and 9
+// inclusive.
+//
+// Pseudocode Example:
+// tallyTheDigits(18838, 8) => 3
+// tallyTheDigits (55555, 3) => 0
+// tallyTheDigits (0, 0) => 0 or 1 (either if fine)
+//
+int tallyTheDigits (int num, int digit)
+{
+ return -1; // This is incorrect.
+}
+// Returns a string where the same characters next each other in
+// string n are separated by "44" (you can assume the input
+// string will not have 4’s)
+//
+// Pseudocode Example:
+// foursUp("goodbye") => "go44odbye"
+// foursUp("yyuu") => "y44yu44u"
+// foursUp("aaaa") => "a44a44a44a"
+//
+string foursUp (string n)
+{
+ return ""; // This is not always correct.
+}
+// str contains a single pair of parentheses, return a new
+// string made of only the parentheses and whatever those
+// parentheses contain
+//
+// Pseudocode Example:
+// parentheticallySpeaking("abc(ghj)789") => "(ghj)"
+// parentheticallySpeaking ("(x)7") => "(x)"
+// parentheticallySpeaking ("4agh(y)") => "(y)"
+// parentheticallySpeaking ("4agh()") => "()"
+//
+string parentheticallySpeaking(string str)
+{
+ return "*"; // This is incorrect.
+}
+// Return true if the total of any combination of elements in
+// the array a equals the value of the target.
+//
+// Pseudocode Example:
+// totalEclipseOfTheHeart([2, 4, 8], 3, 10) => true
+// totalEclipseOfTheHeart ([2, 4, 8], 3, 6) => true
+// totalEclipseOfTheHeart ([2, 4, 8], 3, 11) => false
+// totalEclipseOfTheHeart ([2, 4, 8], 3, 0) => true
+// totalEclipseOfTheHeart ([], 0, 0) => true
+//
+bool totalEclipseOfTheHeart (const int a[], int size, int
+target)
+{
+ return false; // This is not always correct.
+}
+
+2. Write a C++ function named seasonFinale that determines whether or not a
+there's a path from start to finish in a rectangular maze. Here is the prototype:
+bool seasonFinale (string maze[], int nRows, int nCols,
+ int sr, int sc, int er, int ec);
+// Return true if there is a path from (sr,sc) to (er,ec)
+// through the maze; return false otherwise
+The parameters are:
+• A rectangular maze of Xs and dots that represents the maze. Each string of the
+array is a row of the maze.
+• Each 'X' represents a wall, each '@' represents a bottomless trap hole, and each
+'.' represents a walkway.
+• The number of rows in the maze.
+• The number of columns in the maze. Each string in the maze parameter must be
+this length.
+• The starting coordinates in the maze: sr, sc; the row number is in the range 0
+through nRows – 1 and the column number is in the range 0 through nCols – 1.
+• The ending coordinates in the maze: er, ec; the row number is in the range 0
+through nRows – 1, and the column number is in the range 0 through nCols – 1.
+Here is an example of a simple maze with 5 rows and 7 columns:
+"XXXXXXX"
+"X...X@X"
+"XXX.X.X"
+"X@....X"
+"XXXXXXX"
+The function must return true if in the maze as it was when the function was called,
+there is a path from maze[sr][sc] to maze[er][ec] that includes only walkways, no
+walls or bottomless trap holes; otherwise it must return false. The path may turn north,
+east, south, and west, but not diagonally. When the function returns, it is allowable for
+the maze to have been modified by the function.
+(Our convention is that (0,0) is the northwest (upper left) corner, with south (down)
+being the increasing r direction and east (right) being the increasing c direction.)
+Here is pseudocode for your function:
+If the start location is equal to the ending location, then
+we've solved the maze, so return true.
+Mark the start location as visted.
+For each of the four directions,
+ If the location one step in that direction (from the
+ start location) is unvisited,
+ then call seasonFinale starting from that
+ location and ending at the same ending location
+ as in the current call).
+ If that returned true,
+ then return true.
+Return false.
+(If you wish, you can implement the pseudocode for loop with a series of four if
+statements instead of a loop.)
+Here is how a client might use your function:
+int main()
+{
+ string maze[10] = {
+ "XXXXXXXXXX",
+ "X.......@X",
+ "XX@X@@.XXX",
+ "X..X.X...X",
+ "X..X...@.X",
+ "X....XXX.X",
+ "X@X....XXX",
+ "X..XX.XX.X",
+ "X...X....X",
+ "XXXXXXXXXX"
+ };
+
+ if (seasonFinale (maze, 10, 10, 6, 4, 1, 1))
+ cout << "Solvable!" << endl;
+ else
+ cout << "Out of luck!" << endl;
+ return 0;
+}
+Because the focus of this homework is on practice with recursion, we won't demand that
+your function be as robust as we normally would. In particular, your function may make
+the following simplifying assumptions (i.e., you do not have to check for violations):
+• the maze array contains nRows rows (you couldn't check for this anyway);
+• each string in the maze is of length nCols;
+• the maze contains only Xs, @s, and dots when passed in to the function;
+• the top and bottom rows of the maze contain only Xs, as do the left and right
+columns;
+• sr and er are between 0 and nRows – 1 and sc and ec are between 0 and
+nCols – 1;
+• maze[sr][sc] and maze[er][ec] are '.' (i.e., not walls or bottomless trap
+holes)
+(Of course, since your function is not checking for violations of these conditions, make
+sure you don't pass bad values to the function when you test it.)
