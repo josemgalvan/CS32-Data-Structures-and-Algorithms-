@@ -1,0 +1,219 @@
+Take the single source file, and divide it into appropriate header files and
+implementation files, one pair of files for each class. Place the main routine in its own
+file named main.cpp. Make sure each file #includes the headers it needs. Each header
+file must have include guards.
+Now what about the global constants? Place them in their own header file named
+globals.h. And what about utility functions like decodeDirection or clearScreen? Place
+them in their own implementation file named utilities.cpp, and place their prototype
+declarations in globals.h.
+The Visual C++ 2019 and the Xcode writeups demonstrate how to create a multi-file
+project. From the collection of the eleven files produced as a result of this part of the
+project, make sure you can build an executable file that behaves exactly the same way
+as the original single-file program.
+Add a Feature
+If you try running the updated programs (the Windows version, the Mac version or the
+Linux version of the full game, and the Windows version, the Mac version or the Linux
+version of the smaller version of the game), you'll see they have one new command you
+can type: p for Previous. This command shows you how many turns the player has
+been on each grid point (not counting the player's initial placement on the grid): dot
+means 0, a letter character A through Y means 1 through 25 times (A means 1, B
+means 2, etc.) and Z means 26 or more times.
+
+Your task is to implement this functionality. You will need to do the following:
+Define a class named Previous with the following public interface:
+class Previous
+{
+ public:
+ Previous(int nRows, int nCols);
+ bool dropACrumb(int r, int c);
+ void showPreviousMoves() const;
+};
+The constructor initializes a Previous object that corresponds to an Arena with nRows
+rows and nCols columns. You may assume (i.e., you do not have to check) that it will be
+called with a first argument that does not exceed MAXROWS and a second that does
+not exceed MAXCOLS, and that neither argument will be less than 1.
+The dropACrumb function is to be called to notify the Previous object that the player has
+arrived at or stayed at a grid point. The function returns false if row r, column c is not
+within bounds; otherwise, it returns true after recording what it needs to. This function
+expects its parameters to be expressed in the same coordinate system as the arena
+(e.g., row 1, column 1 is the upper-left-most position).
+
+The showPreviousMoves function clears the screen and displays the grid of what has
+happened previously as the posted programs do. This function does clear the screen; it
+does not print the “Press Enter to continue” after the display.
+The class declaration (with any private members you choose to add to support your
+implementation) must be in a file named Previous.h, and the implementation of the
+Previous class's member functions must be in Previous.cpp. If you wish, you may add a
+public destructor to the Previous class. You must not add any other public members to
+the class. (This implies, for example, that you must not add a public default constructor.)
+The only member function of the Previous class that may cout is
+Previous::showPreviousMoves.
+
+Add a data member of type Previous (not of type pointer-to-Previous) to the Arena class
+and provide this public function to access it; notice that it returns a reference to a
+Previous object.
+class Arena
+{
+ …
+ Previous& thePrevious();
+ …
+};
+
+Have the player notify its arena's Previous object about the player's resulting position
+when the player stands or moves.
+Have the Game recognize the new p command, tell the Arena's Previous object to show
+the grid beforehand, and then print the “Press Enter to continue” prompt and wait for the
+user to respond. (cin.ignore(10000,'\n'); does that nicely.) Typing the p command does
+not count as the player's turn.
+
+If we replace your main.cpp file with the following, the program must build successfully
+under both g32 and either Visual C++ or clang++:
+#include "Game.h"
+#include "Game.h"
+#include "Arena.h"
+#include "Arena.h"
+#include "Previous.h"
+#include "Previous.h"
+#include "Player.h"
+#include "Player.h"
+#include "Robot.h"
+#include "Robot.h"
+#include "globals.h"
+#include "globals.h"
+int main()
+{}
+If we replace your main.cpp file with the following, the program must build successfully
+under both g32 and either Visual C++ or clang++:
+#include "Previous.h"
+int main()
+{
+ Previous prev(2, 2);
+ prev.dropACrumb(1, 1);
+ prev.showPreviousMoves();
+}
+Previous.h must not contain any #include line that, if removed, still allows the above
+replacement main.cpp to compile successfully under both g32 and either Visual C++ or
+clang++.
+If we replace your main.cpp file with the following, the program must build successfully
+under both g32 and either Visual C++ or clang++:
+#include "Robot.h"
+int main()
+{
+ Robot r(0, 1, 1);
+}
+CS 32 – Summer 2021 E. Ambrosio
+Robot.h must not contain any #include line that, if removed, still allows the above
+replacement main.cpp to compile successfully under both g32 and either Visual C++ or
+clang++.
+If we replace your main.cpp file with the following, the program must build successfully
+under both g32 and either Visual C++ or clang++:
+#include "Player.h"
+int main()
+{
+ Player p(0, 1, 1);
+}
+Player.h must not contain any #include line that, if removed, still allows the above
+replacement main.cpp to compile successfully under both g32 and either Visual C++ or
+clang++.
+If we replace your main.cpp file with the following, the program must build successfully
+under both g32 and either Visual C++ or clang++:
+#include "Arena.h"
+int main()
+{
+ Arena a(10, 18);
+ a.addPlayer(2, 2);
+}
+Arena.h must not contain any #include line that, if removed, still allows the above
+replacement main.cpp to compile successfully under both g32 and either Visual C++ or
+clang++, except that Arena.h should include globals.h. (Even if Previous.h includes
+globals.h and Arena.h includes Previous.h, good practice says that the author of
+Arena.h who wants to use MAXROBOTS and knows that it's declared in globals.h
+shouldn't have to wonder whether some other header already includes globals.h.)
+If we replace your main.cpp file with the following, the program must build successfully
+under both g32 and either Visual C++ or clang++:
+#include "globals.h"
+#include "Player.h"
+#include "Arena.h"
+int main()
+{
+ Arena a(10, 20);
+ Player p(&a, 2, 3);
+}
+
+If we replace your main.cpp file with the following, the program must build successfully
+under both g32 and either Visual C++ or clang++:
+#include "Arena.h"
+#include "Player.h"
+int main()
+{
+ Arena a(10, 20);
+ Player p(&a, 2, 3);
+}
+If we replace your main.cpp file with the following, the program must build successfully
+under both g32 and either Visual C++ or clang++:
+#include "Player.h"
+#include "Arena.h"
+int main()
+{
+ Arena a(10, 20);
+ Player p(&a, 2, 3);
+}
+If we replace your main.cpp file with the following, the program must build successfully
+under both g32 and either Visual C++ or clang++:
+ #include "Arena.h"
+ #include "Player.h"
+ #include "Previous.h"
+ #include "globals.h"
+ int main()
+ {
+ Arena a(2, 2);
+ a.addPlayer(1, 1);
+ a.player()->move(RIGHT);
+ a.player()->stand();
+ a.player()->move(DOWN);
+ a.thePrevious().showPreviousMoves();
+ }
+When executed, it must clear the screen (à la Arena::thePrevious), and write the
+following three lines (the third line is an empty line):
+ .B
+ .A
+
+If we replace your main.cpp file with the following, the program must not build
+successfully; attempting to compile it should produce an error message like 'r' uses
+undefined class 'Robot' or Variable has incomplete type 'Robot' or variable 'Robot r' has
+initializer but incomplete type (and perhaps other error messages):
+#include "Player.h"
+#include "Arena.h"
+int main()
+{
+ Arena a(10, 20);
+ Player p(&a, 2, 3);
+ Robot r(&a, 1, 1);
+}
+If we replace your main.cpp file with the following, the program must not build
+successfully; attempting to compile it should produce an error message like 'a' uses
+undefined class 'Arena' or Variable has incomplete type 'Arena' or variable 'Arena a' has
+initializer but incomplete type (and perhaps other error messages):
+ #include "globals.h"
+ #include "Robot.h"
+ #include "Player.h"
+ int main()
+ {
+ Arena a(10, 10);
+ }
+If we replace your main.cpp file with the following, the program must not build
+successfully; attempting to compile it should produce an error message like ‘Previous’:
+no appropriate default constructor available or no matching constructor for initialization
+of ‘Previous’ or no matching function for call to Previous::Previous()' (and perhaps other
+error messages):
+#include "Previous.h"
+int main()
+{
+ Previous prev;
+}
+If a .cpp file uses a class or function declared in a particular header file, then it should
+#include that header. The idea is that someone writing a .cpp file should not worry about
+which header files include other header files. For example, a .cpp file using an A object
+and a B object should include both A.h (where presumably the class A is declared) and 
+B.h (where B is declared), without considering whether or not A.h includes B.h or vice
+versa.
